@@ -1,0 +1,55 @@
+optical-tracking-mount/
+│
+├── .github/                             # Automated CI/CD pipelines
+│   └── workflows/
+│       ├── test-vision.yml              # Unit tests for the star-centroid extraction algorithms
+│       └── build-edge.yml               # Builds the ARM binaries for the Raspberry Pi
+│
+├── vision_pipeline/                     # Python + OpenCV: The "Plate Solving" Brain
+│   ├── app/
+│   │   ├── camera/
+│   │   │   └── zwo_asi_driver.py        # Interfaces with the high-speed astronomy camera
+│   │   ├── image_processing/
+│   │   │   ├── background_subtraction.py# Removes noise and light pollution
+│   │   │   └── star_extractor.py        # Identifies the bright pixels (centroids) of stars
+│   │   ├── solver/
+│   │   │   └── astrometry_engine.py     # Compares extracted star patterns to the Tycho-2/Gaia catalog
+│   │   └── main.py                      # gRPC server that outputs: "The camera is currently pointing at exactly RA 14h 29m, Dec +19° 31'"
+│   ├── requirements.txt                 # Includes opencv-python, numpy, scipy
+│   └── Dockerfile
+│
+├── tracking_controller/                 # Go: The Ephemeris Engine & Motor Orchestrator
+│   ├── cmd/
+│   │   └── tracker/
+│   │       └── main.go                  # The main control loop running on the Raspberry Pi
+│   ├── internal/
+│   │   ├── ephemeris/
+│   │   │   └── sgp4_target.go           # Calculates where the ISS *should* be right now
+│   │   ├── kinematics/
+│   │   │   └── coordinate_transform.go  # Converts RA/Dec (Equatorial) into Pan/Tilt (Altitude/Azimuth)
+│   │   ├── control_loop/
+│   │   │   └── pid_controller.go        # Calculates the motor speeds needed to close the error gap
+│   │   └── hardware/
+│   │       └── step_generator.go        # Sends high-frequency step/dir pulses to the stepper motor drivers
+│   ├── go.mod
+│   └── Dockerfile
+│
+├── operator_dashboard/                  # React + TypeScript: The Telescope UI
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ViewfinderHUD.tsx        # Streams the live camera feed with a digital crosshair
+│   │   │   ├── TargetSelector.tsx       # Search bar to select satellites, planets, or deep space objects
+│   │   │   ├── ErrorGraphs.tsx          # Real-time charts showing Tracking Error in arcseconds
+│   │   │   └── ManualOverride.tsx       # Virtual joystick to jog the mount manually
+│   │   ├── hooks/
+│   │   │   └── useWebRTCStream.ts       # Low-latency video streaming from the Pi
+│   │   ├── App.tsx
+│   │   └── index.tsx
+│   ├── package.json
+│   └── Dockerfile
+│
+├── infrastructure/                      # Edge Deployment Setup
+│   ├── docker-compose.pi.yml            # The stack that runs directly on the Raspberry Pi
+│   └── udev_rules/                      # Linux rules to grant the Docker container raw USB access to the camera
+├── Makefile
+└── README.md
