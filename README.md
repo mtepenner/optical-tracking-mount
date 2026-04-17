@@ -55,7 +55,7 @@ The repository is broken down into three primary microservices:
    The `infrastructure/docker-compose.pi.yml` file is configured for the Raspberry Pi environment.
    ```bash
    cd infrastructure
-   docker-compose -f docker-compose.pi.yml up --build -d
+   docker compose -f docker-compose.pi.yml up --build -d
    ```
 
 ## 💻 Usage
