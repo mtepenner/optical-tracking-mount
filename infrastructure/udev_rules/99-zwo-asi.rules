@@ -1,0 +1,8 @@
+﻿# ZWO ASI Camera USB access rules for Docker containers
+# Copy to /etc/udev/rules.d/ and reload: sudo udevadm control --reload-rules
+
+# ZWO ASI cameras (vendor ID 03c3)
+SUBSYSTEM=="usb", ATTR{idVendor}=="03c3", MODE="0666", GROUP="plugdev"
+
+# Generic USB camera fallback
+SUBSYSTEM=="usb", ATTR{bInterfaceClass}=="0e", MODE="0666", GROUP="plugdev"

@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+operator_dashboard/node_modules/
+
+# Build outputs
+operator_dashboard/build/
+tracking_controller/bin/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+vision_pipeline/.pytest_cache/
+
+# Go
+tracking_controller/go.sum
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

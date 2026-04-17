@@ -1,0 +1,54 @@
+﻿version: '3.8'
+
+services:
+  vision-pipeline:
+    build:
+      context: ../vision_pipeline
+      dockerfile: Dockerfile
+    container_name: vision-pipeline
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
+    ports:
+      - "50051:50051"
+    environment:
+      - CAMERA_SIMULATE=false
+    networks:
+      - tracking-net
+
+  tracking-controller:
+    build:
+      context: ../tracking_controller
+      dockerfile: Dockerfile
+    container_name: tracking-controller
+    restart: unless-stopped
+    privileged: true
+    depends_on:
+      - vision-pipeline
+    environment:
+      - VISION_HOST=vision-pipeline
+      - VISION_PORT=50051
+      - OBSERVER_LAT=51.0447
+      - OBSERVER_LON=-114.0719
+    networks:
+      - tracking-net
+
+  operator-dashboard:
+    build:
+      context: ../operator_dashboard
+      dockerfile: Dockerfile
+    container_name: operator-dashboard
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - tracking-controller
+    networks:
+      - tracking-net
+
+networks:
+  tracking-net:
+    driver: bridge

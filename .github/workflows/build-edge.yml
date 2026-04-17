@@ -1,0 +1,39 @@
+﻿name: Build Edge Binaries
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tracking_controller/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tracking_controller/**'
+
+jobs:
+  build-edge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Run Go tests
+        run: |
+          cd tracking_controller
+          go test ./... -v
+
+      - name: Build ARM64 binary
+        run: |
+          cd tracking_controller
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o tracker-arm64 ./cmd/tracker
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tracker-arm64
+          path: tracking_controller/tracker-arm64
